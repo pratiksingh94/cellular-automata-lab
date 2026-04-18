@@ -1,6 +1,25 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
+import { type Rule, simulate } from "../rules";
 
-export default function Grid() {
+// TODO: clean this file a bit, functions are eveyrwhere make ts modular
+
+export type GridFunctions = {
+  randomize: (density?: number) => void;
+  clear: () => void;
+  play: () => void;
+  pause: () => void;
+  isPlaying: () => boolean;
+};
+
+export default function Grid({
+  funcRef,
+  rule,
+  speed,
+}: {
+  funcRef?: React.RefObject<GridFunctions | null>;
+  rule: Rule;
+  speed: number;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ rows: 30, cols: 50 });
   const [isDrawing, setIsDrawing] = useState(false);
@@ -8,10 +27,86 @@ export default function Grid() {
   const gridRef = useRef<number[][]>([]);
   const cellSize = 10;
 
+  const intervalRef = useRef<number | null>(null);
+  const isPlayingRef = useRef(false);
+
   const aliveColor = "#88ff00";
   const deadColor = "#11161c";
   const hoverColor = "rgba(136, 255, 0, 0.3)";
   const hoverPosRef = useRef<{ r: number; c: number } | null>(null);
+
+  function drawGrid() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.fillStyle = deadColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const grid = gridRef.current;
+    for (let r = 0; r < grid.length; r++) {
+      for (let c = 0; c < grid[r].length; c++) {
+        if (grid[r][c]) {
+          ctx.fillStyle = aliveColor;
+          ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+  }
+
+  const clear = useCallback(() => {
+    gridRef.current = Array.from({ length: dimensions.rows }, () =>
+      Array(dimensions.cols).fill(0),
+    );
+    drawGrid();
+  }, [dimensions]);
+
+  const randomize = useCallback(
+    (density = 0.2) => {
+      gridRef.current = Array.from({ length: dimensions.rows }, () =>
+        Array.from({ length: dimensions.cols }, () =>
+          Math.random() < density ? 1 : 0,
+        ),
+      );
+      drawGrid();
+    },
+    [dimensions],
+  );
+
+  const pause = useCallback(() => {
+    isPlayingRef.current = false;
+    if(intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const play = useCallback(() => {
+    if(isPlayingRef.current) return;
+    isPlayingRef.current = true;
+    intervalRef.current = window.setInterval(() => {
+      gridRef.current = simulate(gridRef.current, rule);
+      drawGrid();
+    }, speed)
+  }, [rule, speed])
+  
+  const isPlaying = useCallback(() => isPlayingRef.current, []);
+
+  // useEffect(() => {
+  //   pause();
+  //   play();
+  // }, [speed])
+
+  useEffect(() => {
+    if (funcRef) {
+      funcRef.current = { randomize, clear, play, pause, isPlaying };
+    }
+  }, [randomize, clear, play, pause, isPlaying]);
+
+  useEffect(() => {
+    return () => pause();
+  }, [pause])
 
   useEffect(() => {
     if (!canvasRef.current) return;
