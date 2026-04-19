@@ -45,6 +45,12 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
       className="px-4 py-2 bg-accent text-bg rounded-md font-medium cursor-pointer"
       >{isPlaying ? "Pause" : "Play"}</button>
 
+      <button
+      onClick={() => gridRef.current?.step()}
+      className="px-4 py-2 bg-panel border border-border rounded-md text-text hover:bg-panel-2 transition-colors cursor-pointer"
+      >
+        Step
+      </button>
 
       <div className="h-6 w-px bg-border"/>
 
