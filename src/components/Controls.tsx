@@ -30,36 +30,56 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
 
 
   return (
-    <div className="flex flex-wrap gap-3 items-center mb-4">
-      <select
-      value={selectedPreset}
-      onChange={e => handlePresetChange(e.target.value)}
-      className="px-3 py-2 bg-panel border border-border rounded-md text-text cursor-pointer"
-      >
-        {presets.map(p => (
-          <option key={p.name} value={p.name}>
-            {p.name}
-          </option>
-        ))}
-      </select>
+    <div className="flex flex-wrap gap-3 mb-4">
 
-      <div className="h-6 w-px bg-border"/>
+      {/* rule select  */}
+      <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">
+        <span className="text-text-muted text-sm">Rule:</span>
+        <select
+        value={selectedPreset}
+        onChange={e => handlePresetChange(e.target.value)}
+        className="bg-transparent text-text cursor-pointer outline-none"
+        >
+          {presets.map(p => (
+            <option key={p.name} value={p.name}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <button
-      onClick={() => isPlaying ? gridRef.current?.pause() : gridRef.current?.play()}
-      className="px-4 py-2 bg-accent text-bg rounded-md font-medium cursor-pointer"
-      >{isPlaying ? "Pause" : "Play"}</button>
+      {/* controlling btns  */}
+      <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">
+        <button
+        onClick={() => isPlaying ? gridRef.current?.pause() : gridRef.current?.play()}
+        className="px-3 py-1 bg-accent text-bg rounded font-medium cursor-pointer"
+        >
+          {isPlaying ? "Pause" : "Play"}
+        </button>
 
-      <button
-      onClick={() => gridRef.current?.step()}
-      className="px-4 py-2 bg-panel border border-border rounded-md text-text hover:bg-panel-2 transition-colors cursor-pointer"
-      >
-        Step
-      </button>
+        <button
+        onClick={() => gridRef.current?.step()}
+        className="px-3 py-1 bg-panel-2 text-text rounded cursor-pointer"
+        >Step</button>
+      </div>
 
-      <div className="h-6 w-px bg-border"/>
+      {/* zoom btns */}
+      <div className="flex items-center gap-2 bg-panel border-border rounded-md px-3 py-2">
+        <span className="text-text-muted text-sm">Zoom:</span>
+        <div className="flex gap-1">
+          {zoomLevels.map(z => (
+            <button
+            key={z}
+            onClick={() => onZoomChange(z)}
+            className={`px-2 py-1 text-xs rounded cursor-pointer ${zoom === z ? "bg-accent text-bg font-medium" : "bg-panel-2 text-text"}`}
+            >{z * 100}%</button>
+          ))}
+        </div>
+      </div>
 
-      <div className="flex gap-2 items-center">
+      {/* speed  slider*/}
+      {/* slide for your homies twin  */}
+      <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">
         <span className="text-text-muted text-sm">Speed:</span>
         <input
         type="range"
@@ -69,36 +89,32 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
         onChange={e => onSpeedChange(Number(e.target.value))}
         className="w-24 cursor-pointer"
         />
-        <span className="text-text-muted text-sm w-12">{speed}ms</span>
+        <span className="text-text-muted text-sm w-10">{speed}ms</span>
       </div>
 
-      <div className="h-6 w-px bg-border"/>
+      {/* grid control buttons  */}
+      <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">
+        <button
+        onClick={() => gridRef.current?.clear()}
+        className="px-3 py-1 bg-panel-2 text-text rounded cursor-pointer"
+        >
+          Clear
+        </button>
 
-      <div className="flex gap-1 items-center">
-        <span className="text-text-muted text-sm mr-1">Zoom:</span>
-        {zoomLevels.map(z => (
-          <button
-          key={z}
-          onClick={() => onZoomChange(z)}
-          className={`px-2 py-1 text-xs rounded cursor-pointer ${zoom===z ? "bg-accent text-bg font-medium" : "bg-panel border border-border text-text hover:bg-panel-2"}`}
-          >{z * 100}%</button>
-        ))}
+        <button
+        onClick={() => gridRef.current?.randomize(0.2)}
+        className="px-3 py-1 bg-panel-2 text-text rounded cursor-pointer"
+        >
+          Random 20%
+        </button>
+
+        <button
+        onClickCapture={() => gridRef.current?.randomize(0.5)}
+        className="px-3 py-1 bg-panel-2 text-text rounded cursor-pointer"
+        >
+          Random 50%
+        </button>
       </div>
-
-      <div className="h-6 w-px bg-border"/>
-
-      <button
-      onClick={() => gridRef.current?.clear()}
-      className="px-3 py-2 bg-panel border border-border rounded-md text-text hover:bg-panel-2 transition-colors cursor-pointer"
-      >Clear</button>
-      <button
-      onClick={() => gridRef.current?.randomize(0.2)}
-      className="px-3 py-2 bg-panel border border-border rounded-md text-text hover:bg-panel-2 transition-colors cursor-pointer"
-      >Random 20%</button>
-      <button
-      onClick={() => gridRef.current?.randomize(0.5)}
-      className="px-3 py-2 bg-panel border border-border rounded-md text-text hover:bg-panel-2 transition-colors cursor-pointer"
-      >Random 50%</button>
     </div>
   )
 }
