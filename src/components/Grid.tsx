@@ -17,10 +17,12 @@ export default function Grid({
   funcRef,
   rule,
   speed,
+  zoom = 1
 }: {
   funcRef?: React.RefObject<GridFunctions | null>;
   rule: Rule;
   speed: number;
+  zoom?: number
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ rows: 30, cols: 50 });
@@ -29,7 +31,8 @@ export default function Grid({
   const [generation, setGeneration] = useState(0);
 
   const gridRef = useRef<number[][]>([]);
-  const cellSize = 10;
+  const baseCellSize = 8;
+  const cellSize  = baseCellSize * zoom;
 
   const intervalRef = useRef<number | null>(null);
   const isPlayingRef = useRef(false);
@@ -151,7 +154,7 @@ export default function Grid({
       const cols = Math.max(1, Math.floor(clientWidth / cellSize));
       const rows = Math.max(1, Math.floor(clientHeight / cellSize));
       setDimensions({ rows, cols });
-      gridRef.current = Array.from({ length: rows }, () => Array(cols).fill(0));
+      // gridRef.current = Array.from({ length: rows }, () => Array(cols).fill(0));
     };
 
     updateDimensions();
@@ -160,7 +163,7 @@ export default function Grid({
     resizeObserver.observe(canvasRef.current.parentElement!);
 
     return () => resizeObserver.disconnect();
-  }, []);
+  }, [zoom]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

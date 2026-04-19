@@ -2,6 +2,9 @@ import { useState } from "react";
 import { presets, type Rule } from "../rules";
 import type { GridFunctions } from "./Grid"
 
+
+const zoomLevels = [0.5, 1, 1.5, 2];
+
 export type Props = {
   gridRef: React.RefObject<GridFunctions | null>;
   rule: Rule;
@@ -9,9 +12,11 @@ export type Props = {
   speed: number;
   onSpeedChange: (speed: number) => void;
   isPlaying: boolean;
+  zoom: number;
+  onZoomChange: (zoom: number) => void;
 }
 
-export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedChange, isPlaying }: Props) {
+export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedChange, isPlaying, zoom, onZoomChange }: Props) {
   const [selectedPreset, setSelectedPreset] = useState(rule.name);
 
   const handlePresetChange = (name: string) => {
@@ -67,6 +72,18 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
         <span className="text-text-muted text-sm w-12">{speed}ms</span>
       </div>
 
+      <div className="h-6 w-px bg-border"/>
+
+      <div className="flex gap-1 items-center">
+        <span className="text-text-muted text-sm mr-1">Zoom:</span>
+        {zoomLevels.map(z => (
+          <button
+          key={z}
+          onClick={() => onZoomChange(z)}
+          className={`px-2 py-1 text-xs rounded cursor-pointer ${zoom===z ? "bg-accent text-bg font-medium" : "bg-panel border border-border text-text hover:bg-panel-2"}`}
+          >{z * 100}%</button>
+        ))}
+      </div>
 
       <div className="h-6 w-px bg-border"/>
 

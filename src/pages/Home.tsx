@@ -14,6 +14,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [zoom, setZoom] = useState(0.5);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -97,9 +98,11 @@ export default function Home() {
         onSpeedChange={setSpeed}
         isPlaying={isPlaying}
         // generation={generation}
+        zoom={zoom}
+        onZoomChange={setZoom}
         />
         <div className="w-full h-[600px] bg-panel border border-border rounded-lg overflow-hidden">
-          <Grid funcRef={gridRef} rule={rule} speed={speed}/>
+          <Grid funcRef={gridRef} rule={rule} speed={speed} zoom={zoom}/>
         </div>
 
         <InfoPanel rule={rule} generation={generation} isPlaying={isPlaying}/>
