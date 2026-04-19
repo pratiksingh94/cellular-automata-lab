@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import Grid, { type GridFunctions } from "../components/Grid";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { presets, type Rule } from "../rules";
 import Controls from "../components/Controls";
 import InfoPanel from "../components/InfoPanel";
+import ShortcutsModal from "../components/ShortcutsModal";
 
 export default function Home() {
   const gridRef = useRef<GridFunctions>(null);
@@ -12,6 +13,7 @@ export default function Home() {
   const [speed, setSpeed] = useState(100);
   const [isPlaying, setIsPlaying] = useState(false);
   const [generation, setGeneration] = useState(0);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -23,6 +25,58 @@ export default function Home() {
 
     return () => clearInterval(interval);
   })
+
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if(showShortcuts && e.key !== "Escape") return;
+    if(e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
+
+    switch(e.key) {
+      case " ":
+        e.preventDefault();
+        if(isPlaying) {
+          gridRef.current?.pause()
+        } else {
+          gridRef.current?.play()
+        }
+        break;
+      case 'n':
+      case "ArrowRight":
+        gridRef.current?.step();
+        break;
+      case "c":
+        gridRef.current?.clear();
+        break;
+      case "r":
+        gridRef.current?.randomize(0.2);
+        break;
+      case "h":
+        gridRef.current?.randomize(0.5);
+        break;
+      case "+":
+      case "=":
+        setSpeed(s => Math.max(50, s - 50));
+        break;
+      case "-":
+        setSpeed(s => Math.min(500, s + 50));
+        break;
+      case "?":
+        setShowShortcuts(true);
+        break;
+      case "Escape":
+        if(showShortcuts) {
+          setShowShortcuts(false);
+        } /* else if(isPlaying) {
+        //   gridRef.current?.pause();
+        // } */
+        break;
+    }
+  }, [isPlaying,showShortcuts])
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-start pt-16 px-6">
@@ -50,6 +104,8 @@ export default function Home() {
 
         <InfoPanel rule={rule} generation={generation} isPlaying={isPlaying}/>
       </div>
+
+      {showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)}/>}
     </div>
   )
 }
