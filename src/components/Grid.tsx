@@ -9,6 +9,8 @@ export type GridFunctions = {
   play: () => void;
   pause: () => void;
   isPlaying: () => boolean;
+  step: () => void;
+  getGeneration: () => number;
 };
 
 export default function Grid({
@@ -24,6 +26,8 @@ export default function Grid({
   const [dimensions, setDimensions] = useState({ rows: 30, cols: 50 });
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawValue, setDrawValue] = useState(1);
+  const [generation, setGeneration] = useState(0);
+
   const gridRef = useRef<number[][]>([]);
   const cellSize = 10;
 
@@ -59,6 +63,7 @@ export default function Grid({
     gridRef.current = Array.from({ length: dimensions.rows }, () =>
       Array(dimensions.cols).fill(0),
     );
+    setGeneration(0);
     drawGrid();
   }, [dimensions]);
 
@@ -69,6 +74,7 @@ export default function Grid({
           Math.random() < density ? 1 : 0,
         ),
       );
+      setGeneration(0)
       drawGrid();
     },
     [dimensions],
@@ -84,14 +90,31 @@ export default function Grid({
 
   const play = useCallback(() => {
     if(isPlayingRef.current) return;
+
+    const hasCells = gridRef.current.some(r => r.some(c => c === 1));
+
+    if(!hasCells) {
+      // popluating the grid cuz user too lazy to do it himself before playing smh
+      gridRef.current = Array.from({length: dimensions.rows}, () => Array.from({length: dimensions.cols}, () => (Math.random() < 0.2 ? 1 : 0)))
+    }
+
     isPlayingRef.current = true;
     intervalRef.current = window.setInterval(() => {
       gridRef.current = simulate(gridRef.current, rule);
+      setGeneration(g => g + 1);
       drawGrid();
     }, speed)
-  }, [rule, speed])
+  }, [rule, speed, dimensions])
   
   const isPlaying = useCallback(() => isPlayingRef.current, []);
+
+  const step = useCallback(() => {
+    gridRef.current = simulate(gridRef.current, rule);
+    setGeneration(g => g + 1)
+    drawGrid()
+  }, [rule])
+
+  const getGeneration = useCallback(() => generation, [generation]);
 
   // useEffect(() => {
   //   pause();
@@ -99,10 +122,22 @@ export default function Grid({
   // }, [speed])
 
   useEffect(() => {
-    if (funcRef) {
-      funcRef.current = { randomize, clear, play, pause, isPlaying };
+    if(isPlayingRef.current && intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = window.setInterval(() => {
+        gridRef.current = simulate(gridRef.current, rule);
+
+        setGeneration(g => g + 1);
+        drawGrid();
+      }, speed)
     }
-  }, [randomize, clear, play, pause, isPlaying]);
+  }, [speed, rule])
+
+  useEffect(() => {
+    if (funcRef) {
+      funcRef.current = { randomize, clear, play, pause, isPlaying, step, getGeneration };
+    }
+  }, [randomize, clear, play, pause, isPlaying, step, getGeneration]);
 
   useEffect(() => {
     return () => pause();

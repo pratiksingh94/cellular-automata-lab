@@ -3,6 +3,7 @@ import Grid, { type GridFunctions } from "../components/Grid";
 import { useEffect, useRef, useState } from "react";
 import { presets, type Rule } from "../rules";
 import Controls from "../components/Controls";
+import InfoPanel from "../components/InfoPanel";
 
 export default function Home() {
   const gridRef = useRef<GridFunctions>(null);
@@ -10,11 +11,13 @@ export default function Home() {
   const [rule, setRule] = useState<Rule>(presets[0]);
   const [speed, setSpeed] = useState(100);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [generation, setGeneration] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if(gridRef.current) {
         setIsPlaying(gridRef.current.isPlaying());
+        setGeneration(gridRef.current.getGeneration());
       }
     }, 100);
 
@@ -39,10 +42,13 @@ export default function Home() {
         speed={speed}
         onSpeedChange={setSpeed}
         isPlaying={isPlaying}
+        // generation={generation}
         />
         <div className="w-full h-[600px] bg-panel border border-border rounded-lg overflow-hidden">
           <Grid funcRef={gridRef} rule={rule} speed={speed}/>
         </div>
+
+        <InfoPanel rule={rule} generation={generation} isPlaying={isPlaying}/>
       </div>
     </div>
   )

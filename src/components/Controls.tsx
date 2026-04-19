@@ -45,6 +45,7 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
       className="px-4 py-2 bg-accent text-bg rounded-md font-medium cursor-pointer"
       >{isPlaying ? "Pause" : "Play"}</button>
 
+
       <div className="h-6 w-px bg-border"/>
 
       <div className="flex gap-2 items-center">
@@ -59,6 +60,7 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
         />
         <span className="text-text-muted text-sm w-12">{speed}ms</span>
       </div>
+
 
       <div className="h-6 w-px bg-border"/>
 
