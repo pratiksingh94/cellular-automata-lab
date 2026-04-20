@@ -15,9 +15,11 @@ export type Props = {
   isPlaying: boolean;
   zoom: number;
   onZoomChange: (zoom: number) => void;
+  gridLines?: boolean;
+  onGridLinesChange?: (show: boolean) => void;
 }
 
-export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedChange, isPlaying, zoom, onZoomChange }: Props) {
+export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedChange, isPlaying, zoom, onZoomChange, gridLines, onGridLinesChange }: Props) {
   
   const [selectedPreset, setSelectedPreset] = useState(rule.name);
   const [selectedPattern, setSelectedPattern] = useState("");
@@ -135,6 +137,18 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
           ))}
         </div>
       </div>
+
+      {/* grid toggle  */}
+      {onGridLinesChange && (
+        <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">
+          <button
+          onClick={() => onGridLinesChange(!gridLines)}
+          className={`px-3 py-1 text-sm rounded cursor-pointer ${gridLines ? "bg-accent text-bg font-medium" : "bg-panel-2 text-text"}`}
+          >
+            Grid
+          </button>
+        </div>
+      )}
 
       {/* speed  slider*/}
       {/* slide for your homies twin  */}

@@ -20,12 +20,14 @@ export default function Grid({
   funcRef,
   rule,
   speed,
-  zoom = 1
+  zoom = 1,
+  gridLines = false,
 }: {
   funcRef?: React.RefObject<GridFunctions | null>;
   rule: Rule;
   speed: number;
-  zoom?: number
+  zoom?: number;
+  gridLines?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ rows: 30, cols: 50 });
@@ -61,6 +63,25 @@ export default function Grid({
           ctx.fillStyle = aliveColor;
           ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
         }
+      }
+    }
+
+    if(gridLines) {
+      ctx.strokeStyle = "#1f2933";
+      ctx.lineWidth = 0.5;
+
+      for(let r = 0; r <= dimensions.rows; r++) {
+        ctx.beginPath();
+        ctx.moveTo(0, r * cellSize);
+        ctx.lineTo(canvas.width, r * cellSize);
+        ctx.stroke();
+      }
+
+      for(let c = 0; c <= dimensions.cols; c++) {
+        ctx.beginPath();
+        ctx.moveTo(c * cellSize, 0);
+        ctx.lineTo(c * cellSize, canvas.height);
+        ctx.stroke();
       }
     }
   }
@@ -162,7 +183,7 @@ export default function Grid({
         drawGrid();
       }, speed)
     }
-  }, [speed, rule])
+  }, [speed, rule, gridLines, zoom])
 
   useEffect(() => {
     if (funcRef) {
@@ -191,7 +212,7 @@ export default function Grid({
     resizeObserver.observe(canvasRef.current.parentElement!);
 
     return () => resizeObserver.disconnect();
-  }, [zoom]);
+  }, [zoom, gridLines]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -225,10 +246,27 @@ export default function Grid({
           ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
         }
       }
+      if(gridLines) {
+        ctx.strokeStyle = "#1f2933";
+        ctx.lineWidth = 0.5;
+        for(let r = 0; r <= dimensions.rows; r++) {
+          ctx.beginPath();
+          ctx.moveTo(0, r * cellSize);
+          ctx.lineTo(canvas.width, r * cellSize);
+          ctx.stroke();
+        }
+        for(let c = 0; c <= dimensions.cols; c++) {
+          ctx.beginPath();
+          ctx.moveTo(c * cellSize, 0);
+          ctx.lineTo(c * cellSize, canvas.height);
+          ctx.stroke();
+        }
+      }
     }
 
+
     draw();
-  }, [dimensions]);
+  }, [dimensions, gridLines]);
 
   function setCell(r: number, c: number) {
     if (!gridRef.current[r]) return;
