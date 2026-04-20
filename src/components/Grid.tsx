@@ -11,6 +11,7 @@ export type GridFunctions = {
   isPlaying: () => boolean;
   step: () => void;
   getGeneration: () => number;
+  getAliveCount: () => number;
 };
 
 export default function Grid({
@@ -119,6 +120,10 @@ export default function Grid({
 
   const getGeneration = useCallback(() => generation, [generation]);
 
+  const getAliveCount = useCallback(() => {
+    return gridRef.current.reduce((acc, row) => acc + row.reduce((rowAcc, cell) => rowAcc + cell, 0), 0);
+  }, [])
+
   // useEffect(() => {
   //   pause();
   //   play();
@@ -138,9 +143,9 @@ export default function Grid({
 
   useEffect(() => {
     if (funcRef) {
-      funcRef.current = { randomize, clear, play, pause, isPlaying, step, getGeneration };
+      funcRef.current = { randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount };
     }
-  }, [randomize, clear, play, pause, isPlaying, step, getGeneration]);
+  }, [randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount]);
 
   useEffect(() => {
     return () => pause();

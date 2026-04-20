@@ -13,6 +13,7 @@ export default function Home() {
   const [speed, setSpeed] = useState(100);
   const [isPlaying, setIsPlaying] = useState(false);
   const [generation, setGeneration] = useState(0);
+  const [aliveCount, setAliveCount] = useState(0);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [zoom, setZoom] = useState(0.5);
 
@@ -21,6 +22,7 @@ export default function Home() {
       if(gridRef.current) {
         setIsPlaying(gridRef.current.isPlaying());
         setGeneration(gridRef.current.getGeneration());
+        setAliveCount(gridRef.current.getAliveCount())
       }
     }, 100);
 
@@ -105,7 +107,7 @@ export default function Home() {
           <Grid funcRef={gridRef} rule={rule} speed={speed} zoom={zoom}/>
         </div>
 
-        <InfoPanel rule={rule} generation={generation} isPlaying={isPlaying}/>
+        <InfoPanel rule={rule} generation={generation} isPlaying={isPlaying} aliveCount={aliveCount}/>
       </div>
 
       {showShortcuts && <ShortcutsModal onClose={() => setShowShortcuts(false)}/>}
