@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { presets, type Rule } from "../rules";
 import type { GridFunctions } from "./Grid"
+import { getPatternsForRule } from "../patterns"
 
 
 const zoomLevels = [0.5, 1, 1.5, 2];
@@ -17,14 +18,29 @@ export type Props = {
 }
 
 export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedChange, isPlaying, zoom, onZoomChange }: Props) {
+  
   const [selectedPreset, setSelectedPreset] = useState(rule.name);
+  const [selectedPattern, setSelectedPattern] = useState("");
+
+  const rulePatterns = useMemo(() => getPatternsForRule(rule.name), [rule.name])
 
   const handlePresetChange = (name: string) => {
     setSelectedPreset(name);
+    setSelectedPattern("")
+
 
     const preset = presets.find(p => p.name === name);
     if(preset) {
       onRuleChange(preset);
+    }
+  }
+
+  const handlePatternChange = (name: string) => {
+    setSelectedPattern(name);
+    if(name === "") return;
+    const pattern = rulePatterns.find(p => p.name === name);
+    if(pattern) {
+      gridRef.current?.loadPattern(pattern.data)
     }
   }
 
@@ -45,6 +61,46 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
               {p.name}
             </option>
           ))}
+        </select>
+      </div>
+
+      {/* pattern selector  */}
+      <div className="flex items-center gap2 bg-panel border border-border rounded-md px-3 py-2">
+        <span className="text-text-muted text-sm">Pattern:</span>
+        <select
+        value={selectedPattern}
+        onChange={e => handlePatternChange(e.target.value)}
+        className="bg-panel text-text cursor-pointer outline-none"
+        >
+          <option value="">Select...</option>
+
+          <optgroup label="Still Life">
+            {rulePatterns.filter(p => p.category === "still-life").map(p => (
+              <option key={p.name} value={p.name}>
+                {p.name}
+              </option>
+            ))}
+          </optgroup>
+
+          <optgroup label="Oscillators">
+            {rulePatterns.filter(p => p.category === "oscillator").map(p => (
+              <option key={p.name} value={p.name}>
+                {p.name}
+              </option>
+            ))}
+          </optgroup>
+
+          <optgroup label="Spaceships">
+            {rulePatterns.filter(p => p.category === "spaceship").map(p => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
+          </optgroup>
+
+          <optgroup label="Gun">
+            {rulePatterns.filter(p => p.category === "gun").map(p => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
+          </optgroup>
         </select>
       </div>
 

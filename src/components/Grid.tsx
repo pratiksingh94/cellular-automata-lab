@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { type Rule, simulate } from "../rules";
+import type { Point } from "../types";
 
 // TODO: clean this file a bit, functions are eveyrwhere make ts modular
 
@@ -12,6 +13,7 @@ export type GridFunctions = {
   step: () => void;
   getGeneration: () => number;
   getAliveCount: () => number;
+  loadPattern: (cells: Point[]) =>  void;
 };
 
 export default function Grid({
@@ -124,6 +126,27 @@ export default function Grid({
     return gridRef.current.reduce((acc, row) => acc + row.reduce((rowAcc, cell) => rowAcc + cell, 0), 0);
   }, [])
 
+  const loadPattern = useCallback((cells: Point[]) => {
+    pause();
+
+    gridRef.current = Array.from({length: dimensions.rows}, () => Array(dimensions.cols).fill(0));
+    
+    const centerX = Math.floor(dimensions.cols / 2)
+    const centerY = Math.floor(dimensions.rows / 2);
+
+    cells.forEach(([x, y]) => {
+      const px = centerX + x;
+      const py = centerY + y;
+
+      if(py >= 0 && py < dimensions.rows && px >= 0 && px < dimensions.cols) {
+        gridRef.current[py][px] = 1;
+      }
+    })
+
+    setGeneration(0);
+    drawGrid();
+  }, [dimensions, pause])
+
   // useEffect(() => {
   //   pause();
   //   play();
@@ -143,9 +166,9 @@ export default function Grid({
 
   useEffect(() => {
     if (funcRef) {
-      funcRef.current = { randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount };
+      funcRef.current = { randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount, loadPattern };
     }
-  }, [randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount]);
+  }, [randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount, loadPattern]);
 
   useEffect(() => {
     return () => pause();
