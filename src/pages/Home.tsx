@@ -5,6 +5,7 @@ import { presets, type Rule } from "../rules";
 import Controls from "../components/Controls";
 import InfoPanel from "../components/InfoPanel";
 import ShortcutsModal from "../components/ShortcutsModal";
+import { patterns } from "../patterns";
 
 export default function Home() {
   const gridRef = useRef<GridFunctions>(null);
@@ -29,6 +30,20 @@ export default function Home() {
 
     return () => clearInterval(interval);
   })
+
+  const handleRuleChange = (newRule: Rule) => {
+    setRule(newRule);
+    if(!isPlaying) {
+      if(newRule.usePattern && newRule.recommendedPattern) {
+        const pattern = patterns.find(p => p.name === newRule.recommendedPattern);
+        if(pattern) {
+          gridRef.current?.loadPattern(pattern.data)
+        }
+      } else if(newRule.density) {
+        gridRef.current?.randomize(newRule.density)
+      }
+    }
+  }
 
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -96,7 +111,7 @@ export default function Home() {
         <Controls
         gridRef={gridRef}
         rule={rule}
-        onRuleChange={setRule}
+        onRuleChange={handleRuleChange}
         speed={speed}
         onSpeedChange={setSpeed}
         isPlaying={isPlaying}
