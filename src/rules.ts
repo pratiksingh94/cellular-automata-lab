@@ -16,7 +16,6 @@ export const presets: Rule[] = [
   { name: "Morley", b: [3, 6, 8], s: [2, 4]},
   { name: "Snowflakes", b: [3, 5, 7], s: [5, 7] },
   { name: "Vote", b: [4, 5, 6, 7, 8], s: [4, 5, 6, 7, 8] },
-  { name: "Star Wars", b: [4, 6, 7, 8], s: [5, 6, 7, 8] },
   { name: "Inversed Life", b: [0, 1, 2, 3, 4, 7, 8], s: [3] },
   { name: "Diamonds", b: [2, 4], s: [3]}
 ]
