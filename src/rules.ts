@@ -2,22 +2,23 @@ export type Rule = {
   name: string;
   b: number[];
   s: number[];
+  density?: number;
 }
 
 export const presets: Rule[] = [
-  { name: "Conway's Game of Life", b: [3], s: [2, 3] },
-  { name: "HighLife", b: [3, 6], s: [2, 3] },
-  { name: "Day & Night", b: [3, 6, 7, 8], s: [3, 4, 6, 7, 8] },
-  { name: "Seeds", b: [2], s: [] },
-  { name: "Life without Death", b: [3], s: [0, 1, 2, 3, 4, 5, 6, 7, 8 ] },
-  { name: "Mazectrics", b: [3], s: [1, 2, 3, 4] },
-  { name: "Replicator", b: [1,3,5,7,8], s: [1, 3, 5, 7, 8] },
-  { name: "Live Free or Die", b: [2], s: [0, 1, 2, 3, 4] },
-  { name: "Morley", b: [3, 6, 8], s: [2, 4]},
-  { name: "Snowflakes", b: [3, 5, 7], s: [5, 7] },
-  { name: "Vote", b: [4, 5, 6, 7, 8], s: [4, 5, 6, 7, 8] },
-  { name: "Inversed Life", b: [0, 1, 2, 3, 4, 7, 8], s: [3] },
-  { name: "Diamonds", b: [2, 4], s: [3]}
+  { name: "Conway's Game of Life", b: [3], s: [2, 3], density: 0.2 },
+  { name: "HighLife", b: [3, 6], s: [2, 3], density: 0.2 },
+  { name: "Day & Night", b: [3, 6, 7, 8], s: [3, 4, 6, 7, 8], density: 0.3 },
+  { name: "Seeds", b: [2], s: [], density: 0.4 },
+  { name: "Life without Death", b: [3], s: [0, 1, 2, 3, 4, 5, 6, 7, 8 ], density: 0.1 },
+  { name: "Mazectrics", b: [3], s: [1, 2, 3, 4], density: 0.15 },
+  { name: "Replicator", b: [1,3,5,7,8], s: [1, 3, 5, 7, 8], density: 0.2 },
+  { name: "Live Free or Die", b: [2], s: [0, 1, 2, 3, 4], density: 0.1 },
+  { name: "Morley", b: [3, 6, 8], s: [2, 4], density: 0.3 },
+  { name: "Snowflakes", b: [3, 5, 7], s: [5, 7], density: 0.2 },
+  { name: "Vote", b: [4, 5, 6, 7, 8], s: [4, 5, 6, 7, 8], density: 0.5 },
+  { name: "Inversed Life", b: [0, 1, 2, 3, 4, 7, 8], s: [3], density: 0.3 },
+  { name: "Diamonds", b: [2, 4], s: [3], density: 0.25 }
 ]
 
 

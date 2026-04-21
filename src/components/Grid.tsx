@@ -122,7 +122,8 @@ export default function Grid({
 
     if(!hasCells) {
       // popluating the grid cuz user too lazy to do it himself before playing smh
-      gridRef.current = Array.from({length: dimensions.rows}, () => Array.from({length: dimensions.cols}, () => (Math.random() < 0.2 ? 1 : 0)))
+      const density = rule.density ?? 0.2;
+      gridRef.current = Array.from({length: dimensions.rows}, () => Array.from({length: dimensions.cols}, () => (Math.random() < density ? 1 : 0)))
     }
 
     isPlayingRef.current = true;
