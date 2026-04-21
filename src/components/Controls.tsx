@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
 import { presets, type Rule } from "../rules";
 import type { GridFunctions } from "./Grid"
-import { getPatternsForRule } from "../patterns"
+import { getPatternsForRule, getRecommendedForRule } from "../patterns"
+import type { Pattern } from "../types";
+import RecommendedPatterns from "./RecommendedPatterns";
 
 
 const zoomLevels = [0.5, 1, 1.5, 2];
@@ -25,6 +27,12 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
   const [selectedPattern, setSelectedPattern] = useState("");
 
   const rulePatterns = useMemo(() => getPatternsForRule(rule.name), [rule.name])
+  const recommendedPatterns = useMemo(() => getRecommendedForRule(rule.name), [rule.name])
+
+  const handleSelectRecommend = (pattern: Pattern) => {
+    setSelectedPattern(pattern.name);
+    gridRef.current?.loadPattern(pattern.data)
+  }
 
   const handlePresetChange = (name: string) => {
     setSelectedPreset(name);
@@ -108,6 +116,8 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
           </div>
         )}
       </div>
+
+      <RecommendedPatterns patterns={recommendedPatterns} onSelect={handleSelectRecommend}/>
 
       {/* controlling btns  */}
       <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">

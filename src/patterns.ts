@@ -97,6 +97,7 @@ export const patterns: Pattern[] = [
     category: "oscillator",
     description: "Period-2 oscillator",
     rule: "Conway's Game of Life",
+    recommended: true,
     data: [
       [0, 0], [1, 0],
       [0, 1], [3, 2],
@@ -108,6 +109,7 @@ export const patterns: Pattern[] = [
     category: "oscillator",
     description: "Period-15 oscillator",
     rule: "Conway's Game of Life",
+    recommended: true,
     data: [
       [5, 5], [6, 5],
       [7, 4], [7, 6],
@@ -122,6 +124,7 @@ export const patterns: Pattern[] = [
     category: "oscillator",
     description: "Period-3 oscillator",
     rule: "Conway's Game of Life",
+    recommended: true,
     data: [
       [2, 0], [3, 0], [4, 0], [8, 0], [9, 0], [10, 0],
       [2, 5], [3, 5], [4, 5], [8, 5], [9, 5], [10, 5],
@@ -166,6 +169,7 @@ export const patterns: Pattern[] = [
     category: "gun",
     description: "produces glider every 30 generations",
     rule: "Conway's Game of Life",
+    recommended: true,
     data: [
       [1, 5], [1, 6],
       [2, 5], [2, 6],
@@ -195,6 +199,10 @@ export const patternsByCategory = {
   "oscillator": patterns.filter(p => p.category === "oscillator"),
   "spaceship": patterns.filter(p => p.category === "spaceship"),
   "gun": patterns.filter(p => p.category === "gun")
+}
+
+export function getRecommendedForRule(ruleName: string): Pattern[] {
+  return patterns.filter(p => p.rule === ruleName && p.recommended)
 }
 
 export function getPatternsForRule(ruleName: string): Pattern[] {
