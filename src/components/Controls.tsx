@@ -56,7 +56,7 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
         <select
         value={selectedPreset}
         onChange={e => handlePresetChange(e.target.value)}
-        className="bg-transparent text-text cursor-pointer outline-none"
+        className="bg-panel text-text cursor-pointer outline-none"
         >
           {presets.map(p => (
             <option key={p.name} value={p.name}>
