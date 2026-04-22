@@ -129,7 +129,7 @@ export default function Grid({
       initGrid();
     }
 
-    const hasCells = gridRef.current.some((r) => r.some((c) => c === 1));
+    const hasCells = gridRef.current!.some((r) => r.some((c) => c === 1));
 
     if (!hasCells) {
       // popluating the grid cuz user too lazy to do it himself before playing smh
@@ -210,7 +210,7 @@ export default function Grid({
       clearInterval(intervalRef.current);
       intervalRef.current = window.setInterval(() => {
         if (!gridRef.current) initGrid();
-        gridRef.current = simulate(gridRef.current, rule);
+        gridRef.current = simulate(gridRef.current!, rule);
 
         setGeneration((g) => g + 1);
         drawGrid();

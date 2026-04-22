@@ -6,10 +6,10 @@ An interactive cellular automata playground built with React and TypeScript
 Cellular Automata is a grid of cells where each cell is either alive or dead    
 At each step, every cell counts its neighbors and updates its state based on some rules
 
-## Demo
+<!-- ## Demo
 
 adding soon wait lol
-
+ -->
 
 ## Rules
 

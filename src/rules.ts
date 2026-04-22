@@ -101,7 +101,7 @@ export const presets: Rule[] = [
 
 // what in the nested ahh
 // jojo reference????
-export function simulate(grid: number[][], rule: Rule): number[][] {
+export function simulate(grid: number[][] | null, rule: Rule): number[][] {
   const rows = grid.length;
   const cols = grid[0].length;
   const next = grid.map((row) => [...row]);
