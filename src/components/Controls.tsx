@@ -6,7 +6,7 @@ import type { Pattern } from "../types";
 import RecommendedPatterns from "./RecommendedPatterns";
 
 
-const zoomLevels = [0.5, 1, 1.5, 2];
+// const zoomLevels = [0.5, 1, 1.5, 2];
 
 export type Props = {
   gridRef: React.RefObject<GridFunctions | null>;
@@ -21,7 +21,7 @@ export type Props = {
   onGridLinesChange?: (show: boolean) => void;
 }
 
-export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedChange, isPlaying, zoom, onZoomChange, gridLines, onGridLinesChange }: Props) {
+export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedChange, isPlaying, gridLines, onGridLinesChange }: Props) {
   
   const [selectedPreset, setSelectedPreset] = useState(rule.name);
   const [selectedPattern, setSelectedPattern] = useState("");
