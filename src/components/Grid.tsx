@@ -13,7 +13,7 @@ export type GridFunctions = {
   step: () => void;
   getGeneration: () => number;
   getAliveCount: () => number;
-  loadPattern: (cells: Point[]) =>  void;
+  loadPattern: (cells: Point[]) => void;
 };
 
 export default function Grid({
@@ -35,9 +35,9 @@ export default function Grid({
   const [drawValue, setDrawValue] = useState(1);
   const [generation, setGeneration] = useState(0);
 
-  const gridRef = useRef<number[][]>([]);
+  const gridRef = useRef<number[][] | null>(null);
   const baseCellSize = 8;
-  const cellSize  = baseCellSize * zoom;
+  const cellSize = baseCellSize * zoom;
 
   const intervalRef = useRef<number | null>(null);
   const isPlayingRef = useRef(false);
@@ -46,6 +46,12 @@ export default function Grid({
   const deadColor = "#11161c";
   const hoverColor = "rgba(136, 255, 0, 0.3)";
   const hoverPosRef = useRef<{ r: number; c: number } | null>(null);
+
+  function initGrid() {
+    gridRef.current = Array.from({ length: dimensions.rows }, () =>
+      Array(dimensions.cols).fill(0),
+    );
+  }
 
   function drawGrid() {
     const canvas = canvasRef.current;
@@ -57,6 +63,7 @@ export default function Grid({
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const grid = gridRef.current;
+    if (!grid) return;
     for (let r = 0; r < grid.length; r++) {
       for (let c = 0; c < grid[r].length; c++) {
         if (grid[r][c]) {
@@ -66,18 +73,18 @@ export default function Grid({
       }
     }
 
-    if(gridLines) {
+    if (gridLines) {
       ctx.strokeStyle = "#1f2933";
       ctx.lineWidth = 0.5;
 
-      for(let r = 0; r <= dimensions.rows; r++) {
+      for (let r = 0; r <= dimensions.rows; r++) {
         ctx.beginPath();
         ctx.moveTo(0, r * cellSize);
         ctx.lineTo(canvas.width, r * cellSize);
         ctx.stroke();
       }
 
-      for(let c = 0; c <= dimensions.cols; c++) {
+      for (let c = 0; c <= dimensions.cols; c++) {
         ctx.beginPath();
         ctx.moveTo(c * cellSize, 0);
         ctx.lineTo(c * cellSize, canvas.height);
@@ -87,21 +94,21 @@ export default function Grid({
   }
 
   const clear = useCallback(() => {
-    gridRef.current = Array.from({ length: dimensions.rows }, () =>
-      Array(dimensions.cols).fill(0),
-    );
+    pause();
+    initGrid();
     setGeneration(0);
     drawGrid();
-  }, [dimensions]);
+  }, []);
 
   const randomize = useCallback(
     (density = 0.2) => {
+      initGrid();
       gridRef.current = Array.from({ length: dimensions.rows }, () =>
         Array.from({ length: dimensions.cols }, () =>
           Math.random() < density ? 1 : 0,
         ),
       );
-      setGeneration(0)
+      setGeneration(0);
       drawGrid();
     },
     [dimensions],
@@ -109,65 +116,89 @@ export default function Grid({
 
   const pause = useCallback(() => {
     isPlayingRef.current = false;
-    if(intervalRef.current) {
+    if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
   }, []);
 
   const play = useCallback(() => {
-    if(isPlayingRef.current) return;
+    if (isPlayingRef.current) return;
 
-    const hasCells = gridRef.current.some(r => r.some(c => c === 1));
+    if (!gridRef.current) {
+      initGrid();
+    }
 
-    if(!hasCells) {
+    const hasCells = gridRef.current.some((r) => r.some((c) => c === 1));
+
+    if (!hasCells) {
       // popluating the grid cuz user too lazy to do it himself before playing smh
       const density = rule.density ?? 0.2;
-      gridRef.current = Array.from({length: dimensions.rows}, () => Array.from({length: dimensions.cols}, () => (Math.random() < density ? 1 : 0)))
+      gridRef.current = Array.from({ length: dimensions.rows }, () =>
+        Array.from({ length: dimensions.cols }, () =>
+          Math.random() < density ? 1 : 0,
+        ),
+      );
     }
 
     isPlayingRef.current = true;
     intervalRef.current = window.setInterval(() => {
-      gridRef.current = simulate(gridRef.current, rule);
-      setGeneration(g => g + 1);
+      gridRef.current = simulate(gridRef.current!, rule);
+      setGeneration((g) => g + 1);
       drawGrid();
-    }, speed)
-  }, [rule, speed, dimensions])
-  
+    }, speed);
+  }, [rule, speed, dimensions]);
+
   const isPlaying = useCallback(() => isPlayingRef.current, []);
 
   const step = useCallback(() => {
-    gridRef.current = simulate(gridRef.current, rule);
-    setGeneration(g => g + 1)
-    drawGrid()
-  }, [rule])
+    if (!gridRef.current) initGrid();
+    gridRef.current = simulate(gridRef.current!, rule);
+    setGeneration((g) => g + 1);
+    drawGrid();
+  }, [rule]);
 
   const getGeneration = useCallback(() => generation, [generation]);
 
   const getAliveCount = useCallback(() => {
-    return gridRef.current.reduce((acc, row) => acc + row.reduce((rowAcc, cell) => rowAcc + cell, 0), 0);
-  }, [])
+    if (!gridRef.current) return 0;
+    return gridRef.current.reduce(
+      (acc, row) => acc + row.reduce((rowAcc, cell) => rowAcc + cell, 0),
+      0,
+    );
+  }, []);
 
-  const loadPattern = useCallback((cells: Point[]) => {
-    pause();
+  const loadPattern = useCallback(
+    (cells: Point[]) => {
+      pause();
+      initGrid();
 
-    gridRef.current = Array.from({length: dimensions.rows}, () => Array(dimensions.cols).fill(0));
-    
-    const centerX = Math.floor(dimensions.cols / 2)
-    const centerY = Math.floor(dimensions.rows / 2);
+      gridRef.current = Array.from({ length: dimensions.rows }, () =>
+        Array(dimensions.cols).fill(0),
+      );
 
-    cells.forEach(([x, y]) => {
-      const px = centerX + x;
-      const py = centerY + y;
+      const centerX = Math.floor(dimensions.cols / 2);
+      const centerY = Math.floor(dimensions.rows / 2);
 
-      if(py >= 0 && py < dimensions.rows && px >= 0 && px < dimensions.cols) {
-        gridRef.current[py][px] = 1;
-      }
-    })
+      cells.forEach(([x, y]) => {
+        const px = centerX + x;
+        const py = centerY + y;
 
-    setGeneration(0);
-    drawGrid();
-  }, [dimensions, pause])
+        if (
+          py >= 0 &&
+          py < dimensions.rows &&
+          px >= 0 &&
+          px < dimensions.cols
+        ) {
+          gridRef.current![py][px] = 1;
+        }
+      });
+
+      setGeneration(0);
+      drawGrid();
+    },
+    [dimensions, pause],
+  );
 
   // useEffect(() => {
   //   pause();
@@ -175,26 +206,47 @@ export default function Grid({
   // }, [speed])
 
   useEffect(() => {
-    if(isPlayingRef.current && intervalRef.current) {
-      clearInterval(intervalRef.current)
+    if (isPlayingRef.current && intervalRef.current) {
+      clearInterval(intervalRef.current);
       intervalRef.current = window.setInterval(() => {
+        if (!gridRef.current) initGrid();
         gridRef.current = simulate(gridRef.current, rule);
 
-        setGeneration(g => g + 1);
+        setGeneration((g) => g + 1);
         drawGrid();
-      }, speed)
+      }, speed);
     }
-  }, [speed, rule, gridLines, zoom])
+  }, [speed, rule, gridLines, zoom]);
 
   useEffect(() => {
     if (funcRef) {
-      funcRef.current = { randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount, loadPattern };
+      funcRef.current = {
+        randomize,
+        clear,
+        play,
+        pause,
+        isPlaying,
+        step,
+        getGeneration,
+        getAliveCount,
+        loadPattern,
+      };
     }
-  }, [randomize, clear, play, pause, isPlaying, step, getGeneration, getAliveCount, loadPattern]);
+  }, [
+    randomize,
+    clear,
+    play,
+    pause,
+    isPlaying,
+    step,
+    getGeneration,
+    getAliveCount,
+    loadPattern,
+  ]);
 
   useEffect(() => {
     return () => pause();
-  }, [pause])
+  }, [pause]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -216,6 +268,12 @@ export default function Grid({
   }, [zoom, gridLines]);
 
   useEffect(() => {
+    if (!gridRef.current || gridRef.current.length !== dimensions.rows) {
+      initGrid();
+    }
+  }, [dimensions]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -231,32 +289,35 @@ export default function Grid({
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const grid = gridRef.current;
-      for (let r = 0; r < grid.length; r++) {
-        for (let c = 0; c < grid[r].length; c++) {
-          if (grid[r][c]) {
-            ctx.fillStyle = aliveColor;
+      if (grid) {
+        for (let r = 0; r < grid.length; r++) {
+          for (let c = 0; c < grid[r].length; c++) {
+            if (grid[r][c]) {
+              ctx.fillStyle = aliveColor;
+              ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+
+        if (hoverPosRef.current) {
+          const { r, c } = hoverPosRef.current;
+          if (!grid[r]?.[c]) {
+            ctx.fillStyle = hoverColor;
             ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
           }
         }
       }
 
-      if (hoverPosRef.current) {
-        const { r, c } = hoverPosRef.current;
-        if (!grid[r]?.[c]) {
-          ctx.fillStyle = hoverColor;
-          ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
-        }
-      }
-      if(gridLines) {
+      if (gridLines) {
         ctx.strokeStyle = "#1f2933";
         ctx.lineWidth = 0.5;
-        for(let r = 0; r <= dimensions.rows; r++) {
+        for (let r = 0; r <= dimensions.rows; r++) {
           ctx.beginPath();
           ctx.moveTo(0, r * cellSize);
           ctx.lineTo(canvas.width, r * cellSize);
           ctx.stroke();
         }
-        for(let c = 0; c <= dimensions.cols; c++) {
+        for (let c = 0; c <= dimensions.cols; c++) {
           ctx.beginPath();
           ctx.moveTo(c * cellSize, 0);
           ctx.lineTo(c * cellSize, canvas.height);
@@ -265,11 +326,12 @@ export default function Grid({
       }
     }
 
-
     draw();
   }, [dimensions, gridLines]);
 
   function setCell(r: number, c: number) {
+    if (!gridRef.current) initGrid();
+    if (!gridRef.current) return;
     if (!gridRef.current[r]) return;
     gridRef.current[r][c] = drawValue;
 
@@ -297,6 +359,8 @@ export default function Grid({
   function handleMouseDown(e: React.MouseEvent) {
     const coords = getCellCoords(e);
     if (!coords) return;
+    if (!gridRef.current) initGrid();
+    if (!gridRef.current) return;
     const currentValue = gridRef.current[coords.r]?.[coords.c] || 0;
     setDrawValue(currentValue ? 0 : 1);
     setIsDrawing(true);
@@ -308,7 +372,9 @@ export default function Grid({
     if (!coords) return;
 
     const { r, c } = coords;
+    if (!gridRef.current) initGrid();
     const grid = gridRef.current;
+    if (!grid) return;
     const prevHover = hoverPosRef.current;
 
     const canvas = canvasRef.current;
@@ -358,7 +424,6 @@ export default function Grid({
     }
     hoverPosRef.current = null;
   }
-
   function handleMouseUp() {
     setIsDrawing(false);
   }
