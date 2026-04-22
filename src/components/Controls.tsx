@@ -55,6 +55,24 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
   }
 
 
+  const categories = useMemo(() => {
+    // meow
+    const cats = new Set(rulePatterns.map(p => p.category));
+
+    return Array.from(cats)
+  }, [rulePatterns])
+
+  const patternsByCategory = useMemo(() => {
+    const grouped: Record<string, Pattern[]> = {};
+    rulePatterns.forEach(p => {
+      if(!grouped[p.category]) grouped[p.category] = [];
+      grouped[p.category].push(p);
+    })
+
+    return grouped;
+  }, [rulePatterns])
+
+
   return (
     <div className="flex flex-wrap gap-3 mb-4">
 
@@ -87,29 +105,16 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
           >
             <option value="">Select...</option>
 
-            <optgroup label="Still Life">
-              {rulePatterns.filter(p => p.category === "still-life").map(p => (
-                <option key={p.name} value={p.name}>{p.name}</option>
-              ))}
-            </optgroup>
-
-            <optgroup label="Oscillators">
-              {rulePatterns.filter(p => p.category === "oscillator").map(p => (
-                <option key={p.name} value={p.name}>{p.name}</option>
-              ))}
-            </optgroup>
-
-            <optgroup label="Spaceships">
-              {rulePatterns.filter(p => p.category === "spaceship").map(p => (
-                <option key={p.name} value={p.name}>{p.name}</option>
-              ))}
-            </optgroup>
-
-            <optgroup label="Guns">
-              {rulePatterns.filter(p => p.category === "gun").map(p => (
-                <option key={p.name} value={p.name}>{p.name}</option>
-              ))}
-            </optgroup>
+            {categories.map(cat => (
+              <optgroup
+              key={cat}
+              label={cat}
+              >
+                {patternsByCategory[cat]?.map(p => (
+                  <option key={p.name} value={p.name}>{p.name}</option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         </div>
         {selectedPattern && (
