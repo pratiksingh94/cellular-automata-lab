@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { presets, type Rule } from "../rules";
+import { parseRule, presets, type Rule } from "../rules";
 import type { GridFunctions } from "./Grid"
 import { getPatternsForRule, getRecommendedForRule } from "../patterns"
 import type { Pattern } from "../types";
@@ -26,8 +26,19 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
   const [selectedPreset, setSelectedPreset] = useState(rule.name);
   const [selectedPattern, setSelectedPattern] = useState("");
 
+  const [customMode, setCustomMode] = useState(false);
+  const [customInput, setCustomInput] = useState("");
+
   const rulePatterns = useMemo(() => getPatternsForRule(rule.name), [rule.name])
   const recommendedPatterns = useMemo(() => getRecommendedForRule(rule.name), [rule.name])
+
+  const parsedCustomRule = useMemo(() => {
+    if(!customInput) return null;
+    return parseRule(customInput);
+  }, [customInput])
+
+  const customInputValid = customInput.trim() !== "" && parsedCustomRule !== null;
+  const customInputError = customInput.trim() !== "" && parsedCustomRule === null;
 
   const handleSelectRecommend = (pattern: Pattern) => {
     setSelectedPattern(pattern.name);
@@ -37,11 +48,35 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
   const handlePresetChange = (name: string) => {
     setSelectedPreset(name);
     setSelectedPattern("")
-
+    
+    setCustomMode(false);
+    setCustomInput("");
 
     const preset = presets.find(p => p.name === name);
     if(preset) {
       onRuleChange(preset);
+    }
+  }
+
+  const handleCustomApply = () => {
+    if(!customInputValid) return;
+    gridRef.current?.clear();
+    onRuleChange(parsedCustomRule!);
+  }
+
+  const handleCustomKeyDown = (e: React.KeyboardEvent) => {
+    if(e.key === "Enter" && customInputValid) {
+      handleCustomApply();
+    }
+  }
+
+  const toggleCustomMode = () => {
+    if(customMode) {
+      setCustomMode(false);
+      setCustomInput("");
+    } else {
+      setCustomMode(true);
+      setCustomInput("");
     }
   }
 
@@ -79,54 +114,94 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
       {/* rule select  */}
       <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">
         <span className="text-text-muted text-sm">Rule:</span>
-        <select
-        value={selectedPreset}
-        onChange={e => handlePresetChange(e.target.value)}
-        className="bg-panel text-text cursor-pointer outline-none"
-        >
-          {presets.map(p => (
-            <option key={p.name} value={p.name}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+        {!customMode ? (
+          <>
+          <select
+          value={selectedPreset}
+          onChange={e => handlePresetChange(e.target.value)}
+          className="bg-panel text-text cursor-pointer outline-none"
+          >
+            {presets.map(p => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
+          </select>
+          <button
+          onClick={toggleCustomMode}
+          className="px-2 py-1 text-xs bg-panel-2 text-text-muted rounded cursor-pointer hover:text-text"
+          title="Enter custom rule"
+          >
+            Custom
+          </button>
+          </>
+        ) : (
+          <>
+          <input
+          type="text"
+          value={customInput}
+          onChange={e => setCustomInput(e.target.value)}
+          onKeyDown={handleCustomKeyDown}
+          placeholder="B67/S41"
+          className={`bg-transparent text-text outline-none px-2 py-1 border rounded w-28 ${customInputError ? "border-red-500" : customInputValid ? "border-green-500" : "border-border"}`}
+          />
+          <button
+          onClick={handleCustomApply}
+          disabled={!customInputValid}
+          className={`px-2 py-1 text-xs rounded cursor-pointer ${customInputValid ? "bg-accent text-bg" : "bg-panel-2 text-text-muted cursor-not-allowed"}`}
+          >
+            Apply
+          </button>
+          {customInputError && (
+            <span className="text-red-500 text-xs">Invalid format</span>
+          )}
+          <button
+          onClick={toggleCustomMode}
+          className="px-2 py-1 text-xs bg-panel-2 text-text-muted rounded cursor-pointer hover:text-text"
+          title="Back to presets"
+          >
+            Presets
+          </button>
+          </>
+        )}
       </div>
 
       {/* pattern selector  */}
-      
-      {rulePatterns.length > 0 && (
+      {(!customMode || rulePatterns.length > 0) && (
+        <>
         <div className="flex flex-col gap-2 bg-panel border border-border rounded-md px-3 py-2">
-        <div className="flex items-center gap-2">
-          <span className="text-text-muted text-sm">Pattern:</span>
-          <select
-          value={selectedPattern}
-          onChange={e => handlePatternChange(e.target.value)}
-          className="bg-panel text-text cursor-pointer outline-none"
-          >
-            <option value="">Select...</option>
-
-            {categories.map(cat => (
-              <optgroup
-              key={cat}
-              label={cat}
-              >
-                {patternsByCategory[cat]?.map(p => (
-                  <option key={p.name} value={p.name}>{p.name}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-        </div>
-        {selectedPattern && (
-          <div className="text-text-muted text-xs">
-            {rulePatterns.find(p => p.name === selectedPattern)?.description}
+          <div className="flex items-center gap-2">
+            <span className="text-text-muted text-sm">Pattern:</span>
+            <select
+            value={selectedPattern}
+            onChange={e => handlePatternChange(e.target.value)}
+            className="bg-panel text-text cursor-pointer outline-none"
+            >
+              <option value="">Select...</option>
+              {categories.map(cat => (
+                <optgroup key={cat} label={cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, " ")}>
+                  {patternsByCategory[cat]?.map( p => (
+                    <option key={p.name} value={p.name}>{p.name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
-        )}
-      </div>
+
+          {selectedPattern && (
+            <div className="text-text-muted text-xs">
+              {rulePatterns.find(p => p.name === selectedPattern)?.description}
+            </div>
+          )}
+        </div>
+
+        <RecommendedPatterns
+        patterns={recommendedPatterns}
+        onSelect={handleSelectRecommend}
+        />
+        </>
       )}
 
-      <RecommendedPatterns patterns={recommendedPatterns} onSelect={handleSelectRecommend}/>
-
+      
+      
       {/* controlling btns  */}
       <div className="flex items-center gap-2 bg-panel border border-border rounded-md px-3 py-2">
         <button
@@ -143,7 +218,7 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
       </div>
 
       {/* zoom btns */}
-      <div className="flex items-center gap-2 bg-panel border-border rounded-md px-3 py-2">
+      {/* <div className="flex items-center gap-2 bg-panel border-border rounded-md px-3 py-2">
         <span className="text-text-muted text-sm">Zoom:</span>
         <div className="flex gap-1">
           {zoomLevels.map(z => (
@@ -154,7 +229,7 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
             >{z * 100}%</button>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* grid toggle  */}
       {onGridLinesChange && (

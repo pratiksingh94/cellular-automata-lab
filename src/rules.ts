@@ -28,12 +28,12 @@ export const presets: Rule[] = [
     s: [3, 4, 6, 7, 8],
     density: 0.3,
   },
-  { name: "Seeds", b: [2], s: [], density: 0.4, recommendedPattern: "Photon", usePattern: true},
+  { name: "Seeds", b: [2], s: [], density: 0.4, recommendedPattern: "Block", usePattern: true},
   {
     name: "Life without Death",
     b: [3],
     s: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-    density: 0.1,
+    density: 0.01,
   },
   {
     name: "Mazectrics",
@@ -91,6 +91,12 @@ export const presets: Rule[] = [
     recommendedPattern: "Diamond Seed",
     usePattern: true,
   },
+  {
+    name: "Diamoeba",
+    b: [3, 5, 6, 7, 8],
+    s: [5, 6, 7, 8],
+    density: 0.5,
+  }
 ];
 
 // what in the nested ahh
@@ -128,4 +134,20 @@ export function simulate(grid: number[][], rule: Rule): number[][] {
   }
 
   return next;
+}
+
+
+export function parseRule(input: string): Rule | null {
+  const match = input.match(/^B([0-9,]*)\/S([0-9,]*)$/i);
+  if (!match) return null;
+
+  const parseNumbers = (str: string) =>
+    str ? str.split(",").join("").split("").map(Number).filter(n => !isNaN(n) && n >= 0 && n <= 8) : [];
+
+  const b = parseNumbers(match[1]);
+  const s = parseNumbers(match[2]);
+
+  if (b.length === 0 && s.length === 0) return null;
+
+  return { name: "Custom", b, s };
 }
