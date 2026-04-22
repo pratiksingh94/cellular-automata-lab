@@ -72,6 +72,12 @@ export default function Home() {
       case "h":
         gridRef.current?.randomize(0.5);
         break;
+      case "t":
+        gridRef.current?.randomize(0.1);
+        break;
+      case "g":
+        setGridLines(prev => !prev);
+        break;
       case "+":
       case "=":
         setSpeed(s => Math.max(50, s - 50));
@@ -90,7 +96,7 @@ export default function Home() {
         // } */
         break;
     }
-  }, [isPlaying,showShortcuts])
+  }, [isPlaying,showShortcuts, gridLines])
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);

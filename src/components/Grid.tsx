@@ -156,7 +156,7 @@ export default function Grid({
     gridRef.current = simulate(gridRef.current!, rule);
     setGeneration((g) => g + 1);
     drawGrid();
-  }, [rule]);
+  }, [rule, gridLines]);
 
   const getGeneration = useCallback(() => generation, [generation]);
 
