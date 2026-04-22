@@ -75,7 +75,9 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
       </div>
 
       {/* pattern selector  */}
-      <div className="flex flex-col gap-2 bg-panel border border-border rounded-md px-3 py-2">
+      
+      {rulePatterns.length > 0 && (
+        <div className="flex flex-col gap-2 bg-panel border border-border rounded-md px-3 py-2">
         <div className="flex items-center gap-2">
           <span className="text-text-muted text-sm">Pattern:</span>
           <select
@@ -116,6 +118,7 @@ export default function Controls({ gridRef, rule, onRuleChange, speed, onSpeedCh
           </div>
         )}
       </div>
+      )}
 
       <RecommendedPatterns patterns={recommendedPatterns} onSelect={handleSelectRecommend}/>
 

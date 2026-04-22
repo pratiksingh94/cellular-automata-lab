@@ -5,6 +5,6 @@ export type Pattern = {
   data: Point[];
   description: string;
   rule: string;
-  category: "still-life" | "oscillator" | "spaceship" | "gun";
+  category: string;
   recommended?: boolean;
 }

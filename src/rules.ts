@@ -13,8 +13,6 @@ export const presets: Rule[] = [
     b: [3],
     s: [2, 3],
     density: 0.2,
-    recommendedPattern: "Glider",
-    usePattern: false
   },
   {
     name: "HighLife",
@@ -30,7 +28,7 @@ export const presets: Rule[] = [
     s: [3, 4, 6, 7, 8],
     density: 0.3,
   },
-  { name: "Seeds", b: [2], s: [], density: 0.4, recommendedPattern: "Glider", usePattern: true},
+  { name: "Seeds", b: [2], s: [], density: 0.4, recommendedPattern: "Photon", usePattern: true},
   {
     name: "Life without Death",
     b: [3],
@@ -42,7 +40,7 @@ export const presets: Rule[] = [
     b: [3],
     s: [1, 2, 3, 4],
     density: 0.15,
-    recommendedPattern: "Glider",
+    recommendedPattern: "Maze Seed",
     usePattern: true
   },
   {
@@ -50,7 +48,7 @@ export const presets: Rule[] = [
     b: [1, 3, 5, 7, 8],
     s: [1, 3, 5, 7, 8],
     density: 0.2,
-    recommendedPattern: "Block",
+    recommendedPattern: "Replicator Seed",
     usePattern: true
   },
   {
@@ -58,7 +56,7 @@ export const presets: Rule[] = [
     b: [2],
     s: [0, 1, 2, 3, 4],
     density: 0.1,
-    recommendedPattern: "Glider",
+    recommendedPattern: "R-Pentomino",
     usePattern: true,
   },
   {
@@ -90,7 +88,7 @@ export const presets: Rule[] = [
     b: [2, 4],
     s: [3],
     density: 0.25,
-    recommendedPattern: "Block",
+    recommendedPattern: "Diamond Seed",
     usePattern: true,
   },
 ];

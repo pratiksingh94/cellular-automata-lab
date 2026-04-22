@@ -1,7 +1,7 @@
 import type { Pattern } from "./types"
 
 export const patterns: Pattern[] = [
-  // STILL LIFE
+  // COnway
   {
     name: "Block",
     category: "still-life",
@@ -68,8 +68,6 @@ export const patterns: Pattern[] = [
       [2, 1], [1, 2]
     ]
   },
-
-  // OSCILLATORS
   {
     name: "Blinker",
     category: "oscillator",
@@ -136,8 +134,6 @@ export const patterns: Pattern[] = [
       [12, 2], [12, 3], [12, 4], [12, 8], [12, 9], [12, 10]
     ]
   },
-
-  // SPACESHIPS
   {
     name: "Glider",
     category: "spaceship",
@@ -150,9 +146,9 @@ export const patterns: Pattern[] = [
     ]
   },
   {
-    name: "Lightweight Spaceship",
+    name: "LWSS",
     category: "spaceship",
-    description: "Moves horizontally",
+    description: "Lightweight spaceship",
     rule:"Conway's Game of Life",
     data: [
       [1, 0], [4, 0],
@@ -162,8 +158,6 @@ export const patterns: Pattern[] = [
       [3, 3]
     ]
   },
-
-  // GUNS
   {
     name: "Gosper Glider Gun",
     category: "gun",
@@ -190,7 +184,136 @@ export const patterns: Pattern[] = [
       [35, 3], [35, 4],
       [36, 3], [36, 4]
     ]
-  }
+  },
+  {
+    name: "Acorn",
+    category: "methuselah",
+    description: "Small start, 5206 generations of chaos then stable",
+    rule: "Conway's Game of Life",
+    recommended: true,
+    data: [
+      [1, 0], [3, 1],
+      [0, 2], [1, 2],
+      [4, 2], [5, 2],
+      [6, 2]
+    ]
+  },
+  {
+    name: "MWSS",
+    category: "spaceship",
+    description: "Mediumweight spaceship",
+    rule: "Conway's Game of Life",
+    data: [
+      [3, 0], [1, 1],
+      [5, 1], [0, 2],
+      [0, 3], [5, 3], 
+      [0, 4], [1, 4],
+      [2, 4], [3, 4],
+      [4, 4]
+    ]
+  },
+  // {
+  //   name: "Kok's Galaxy",
+  //   category: "oscillator",
+  //   description: "Period-8 rotating spiral",
+  //   rule: "Conway's Game of Life",
+  //   data: [
+  //     [-4, -4], [-3, -4], [-2, -4], [-4, -3], [-3, -3], [-2, -3],
+  //   [0, -4], [1, -4], [0, -3], [1, -3], [0, -2], [1, -2],
+  //   [3, -1], [3, 0], [3, 1], [4, -1], [4, 0], [4, 1],
+  //   [2, 3], [3, 3], [4, 3], [2, 4], [3, 4], [4, 4],
+  //   [-1, 2], [0, 2], [-1, 3], [0, 3], [-1, 4], [0, 4],
+  //   [-4, -1], [-4, 0], [-4, 1], [-3, -1], [-3, 0], [-3, 1]
+  //   ]
+  // },
+
+  // SEEDS PATTERNS
+  {
+    name: "Photon",
+    category: "spaceship",
+    description: "4-cell spaceship",
+    rule: "Seeds",
+    recommended: true,
+    data: [
+      [1, 0], [0, 1],
+      [0, 2], [1, 3]
+    ]
+  },
+  {
+    name: "Duoplet",
+    category: "oscillator",
+    description: "2-cell period-2 oscillator",
+    rule: "Seeds",
+    recommended: true,
+    data: [
+      [0, 1], [1, 1]
+    ]
+  },
+
+  // MAZECTRICS PATTERNS
+  {
+    name: "Maze Seed",
+    category: "seed",
+    description: "Simple seed that gorws into maze",
+    rule: "Mazectrics",
+    recommended: true,
+    data: [
+      [0, 0], [1, 0],
+      [0, 1], [1, 1],
+      [1, 2]
+    ]
+  },
+
+  // REPLCATOR SEED,
+  {
+    name: "Replicator Seed",
+    category: "seed",
+    description: "2x2 that self-replicators every 8",
+    rule: "Replicator",
+    recommended: true,
+    data: [
+      [0, 0], [1, 0],
+      [0, 1], [1, 1]
+    ]
+  },
+
+
+  // LIVE FREE OR DIE PATTERNS
+  {
+    name: "Dot",
+    category: "still-life",
+    description: "only still life in this rule",
+    rule: "Live Free or Die",
+    data: [
+      [0, 0]
+    ]
+  },
+  {
+    name: "R-Pentomino",
+    category: "seed",
+    description: "5-cell chaos seed, famous pattern",
+    rule: "Live Free or Die",
+    recommended: true,
+    data: [
+      [1, 0], [2, 0],
+      [0, 1], [1, 1],
+      [0, 2]
+    ]
+  },
+
+
+  // DIAMON PATTERNS
+  {
+    name: "Diamond Seed",
+    category: "seed",
+    description: "2x2 seed that grows into diamond",
+    rule: "Diamonds",
+    recommended: true,
+    data: [
+      [0, 0], [1, 0],
+      [0, 1], [1, 1]
+    ]
+  },
 ]
 
 
