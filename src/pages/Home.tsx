@@ -109,7 +109,7 @@ export default function Home() {
         <h1 className="text-3xl font-bond text-text mb-2">Cellular Automata Lab</h1>
         <p className="text-text-muted">
           Interactive Cellular Automata Playground{" "}
-          <Link to="/whatthehell" className="text-accent hover:text-accent-soft transition-colors">| what is this?</Link>
+          <Link to="/whatthehell" className="text-accent hover:text-accent-soft transition-colors">| what is this? (click FT people!)</Link>
         </p>
       </div>
 
