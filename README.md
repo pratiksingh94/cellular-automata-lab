@@ -89,7 +89,7 @@ This project includes 13 CA rules:
 
 ```bash
 # Clone it
-git clone [insert link here]
+git clone https://github.com/pratiksingh94/cellular-automata-lab.git
 
 # Install dependencies
 pnpm install
